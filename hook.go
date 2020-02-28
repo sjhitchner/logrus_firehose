@@ -40,7 +40,7 @@ func New(name string, conf Config) (*FirehoseHook, error) {
 		return nil, err
 	}
 
-	return NewWithSession(name, sess, defaultLevels...)
+	return NewWithAWSSession(name, sess, defaultLevels...)
 }
 
 // NewWithConfig returns initialized logrus hook for Firehose with persistent Firehose logger.
@@ -50,11 +50,11 @@ func NewWithAWSConfig(name string, conf *aws.Config) (*FirehoseHook, error) {
 		return nil, err
 	}
 
-	return NewWithSession(name, sess, defaultLevels...)
+	return NewWithAWSSession(name, sess, defaultLevels...)
 }
 
 // NewWithSession returns initialized logrus hook for Firehose with persistent Firehose logger.
-func NewWithSession(name string, sess *session.Session, levels ...logrus.Level) (*FirehoseHook, error) {
+func NewWithAWSSession(name string, sess *session.Session, levels ...logrus.Level) (*FirehoseHook, error) {
 	svc := firehose.New(sess)
 	return &FirehoseHook{
 		client:            svc,
@@ -62,6 +62,7 @@ func NewWithSession(name string, sess *session.Session, levels ...logrus.Level) 
 		levels:            levels,
 		ignoreFields:      make(map[string]struct{}),
 		filters:           make(map[string]func(interface{}) interface{}),
+		addNewLine:        true,
 	}, nil
 }
 
